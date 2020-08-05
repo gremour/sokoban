@@ -9,6 +9,7 @@ import (
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
+	"github.com/gremour/sokoban/game"
 	"golang.org/x/image/colornames"
 )
 
@@ -29,15 +30,27 @@ func run() {
 		panic(err)
 	}
 
-	brick := pixel.NewSprite(pic, pixel.R(0, 0, 32, 32))
+	var sprites []*pixel.Sprite
+	for i := 0; i < int(pic.Bounds().Max.X/32); i++ {
+		sprite := pixel.NewSprite(pic, pixel.R(float64(i*32), 0, float64((i+1)*32), 32))
+		sprites = append(sprites, sprite)
+	}
 
-	center := pixel.IM.Moved(win.Bounds().Center())
+	g, err := game.New("level", sprites)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	wmap := float64(g.Map.Width) * 32
+	hmap := float64(g.Map.Height) * 32
+	dx := (win.Bounds().W() - wmap) / 2
+	dy := (win.Bounds().H() - hmap) / 2
+
+	matr := pixel.IM.Moved(pixel.V(dx, dy))
 	for !win.Closed() {
-		win.Clear(colornames.Skyblue)
-		brick.Draw(win, center)
-		brick.Draw(win, center.Moved(pixel.V(32, 0)))
-		brick.Draw(win, center.Moved(pixel.V(64, 0)))
-
+		win.Clear(colornames.Darkgray)
+		g.Draw(win, matr)
+		g.DrawPlayer(win, matr)
 		win.Update()
 	}
 }
