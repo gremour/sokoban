@@ -47,6 +47,27 @@ func (m Map) IndexToGame(ind int) (int, int) {
 	return x, y
 }
 
+// IsInBounds ...
+func (m Map) IsInBounds(x, y int) bool {
+	return x >= 0 && x < m.Width && y >= 0 && y < m.Height
+}
+
+// ObjAt ...
+func (m Map) ObjAt(x, y int) byte {
+	if !m.IsInBounds(x, y) {
+		return Wall
+	}
+	return m.Level[m.GameToIndex(x, y)]
+}
+
+// PutObjAt ...
+func (m Map) PutObjAt(x, y int, obj byte) {
+	if !m.IsInBounds(x, y) {
+		return
+	}
+	m.Level[m.GameToIndex(x, y)] = obj
+}
+
 // MapFromFile ...
 func MapFromFile(filename string) (Map, Pos, error) {
 	bytes, err := ioutil.ReadFile(filename)

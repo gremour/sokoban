@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"image"
 	"log"
 	"os"
@@ -9,8 +10,10 @@ import (
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
+	"github.com/faiface/pixel/text"
 	"github.com/gremour/sokoban/game"
 	"golang.org/x/image/colornames"
+	"golang.org/x/image/font/basicfont"
 )
 
 func run() {
@@ -46,11 +49,32 @@ func run() {
 	dx := (win.Bounds().W() - wmap) / 2
 	dy := (win.Bounds().H() - hmap) / 2
 
+	atlas := text.NewAtlas(basicfont.Face7x13, text.ASCII)
+	winText := text.New(win.Bounds().Center().Add(pixel.V(-175, 0)), atlas)
+	winText.Color = colornames.Lightsalmon
+	fmt.Fprintf(winText, "You Win!")
+
 	matr := pixel.IM.Moved(pixel.V(dx, dy))
 	for !win.Closed() {
 		win.Clear(colornames.Darkgray)
 		g.Draw(win, matr)
 		g.DrawPlayer(win, matr)
+
+		if g.Win {
+			winText.Draw(win, pixel.IM.Scaled(winText.Orig, 6))
+		} else {
+			switch {
+			case win.JustPressed(pixelgl.KeyLeft):
+				g.Move(-1, 0)
+			case win.JustPressed(pixelgl.KeyRight):
+				g.Move(1, 0)
+			case win.JustPressed(pixelgl.KeyDown):
+				g.Move(0, 1)
+			case win.JustPressed(pixelgl.KeyUp):
+				g.Move(0, -1)
+			}
+		}
+
 		win.Update()
 	}
 }
