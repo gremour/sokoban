@@ -36,24 +36,24 @@ type Pos struct {
 }
 
 // GameToIndex ...
-func (m Map) GameToIndex(x, y int) int {
+func (m *Map) GameToIndex(x, y int) int {
 	return x + y*m.Width
 }
 
 // IndexToGame ...
-func (m Map) IndexToGame(ind int) (int, int) {
+func (m *Map) IndexToGame(ind int) (int, int) {
 	x := ind % m.Width
 	y := ind / m.Width
 	return x, y
 }
 
 // IsInBounds ...
-func (m Map) IsInBounds(x, y int) bool {
+func (m *Map) IsInBounds(x, y int) bool {
 	return x >= 0 && x < m.Width && y >= 0 && y < m.Height
 }
 
 // ObjAt ...
-func (m Map) ObjAt(x, y int) byte {
+func (m *Map) ObjAt(x, y int) byte {
 	if !m.IsInBounds(x, y) {
 		return Wall
 	}
@@ -61,7 +61,7 @@ func (m Map) ObjAt(x, y int) byte {
 }
 
 // PutObjAt ...
-func (m Map) PutObjAt(x, y int, obj byte) {
+func (m *Map) PutObjAt(x, y int, obj byte) {
 	if !m.IsInBounds(x, y) {
 		return
 	}
